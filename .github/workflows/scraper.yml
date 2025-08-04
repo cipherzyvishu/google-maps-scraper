@@ -2,7 +2,7 @@ name: Daily Google Maps Scraper
 
 on:
   schedule:
-    - cron: '0 5 * * *'  # Runs daily at 5 AM UTC
+    - cron: '0 5 * * *'  # Daily at 5 AM UTC
   workflow_dispatch:
 
 jobs:
@@ -24,14 +24,12 @@ jobs:
         sudo apt install -y wget unzip curl gnupg
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         sudo apt install -y ./google-chrome-stable_current_amd64.deb || sudo apt --fix-broken install -y
-        # Use matching stable ChromeDriver version manually
-        wget https://chromedriver.storage.googleapis.com/120.0.6099.109/chromedriver_linux64.zip
+        # ✅ Use working ChromeDriver version
+        wget https://chromedriver.storage.googleapis.com/124.0.6367.91/chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/chromedriver
         chmod +x /usr/local/bin/chromedriver
         pip install selenium
-
-
 
     - name: Run scraper script
       run: |
