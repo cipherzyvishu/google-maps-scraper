@@ -24,13 +24,14 @@ jobs:
         sudo apt install -y wget unzip curl gnupg
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         sudo apt install -y ./google-chrome-stable_current_amd64.deb || sudo apt --fix-broken install -y
-        CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
-        DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION%.*}")
-        wget https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip
+        # Use matching stable ChromeDriver version manually
+        wget https://chromedriver.storage.googleapis.com/120.0.6099.109/chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/chromedriver
         chmod +x /usr/local/bin/chromedriver
         pip install selenium
+
+
 
     - name: Run scraper script
       run: |
