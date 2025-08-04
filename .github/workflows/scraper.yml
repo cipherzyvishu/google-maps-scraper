@@ -2,15 +2,15 @@ name: Daily Google Maps Scraper
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Runs every day at 6 AM UTC
-  workflow_dispatch:     # Allow manual runs
+    - cron: '0 5 * * *'  # Runs daily at 5 AM UTC
+  workflow_dispatch:
 
 jobs:
   run-scraper:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
+    - name: Checkout repository
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -18,27 +18,27 @@ jobs:
       with:
         python-version: '3.11'
 
-    - name: Install dependencies
+    - name: Install Chrome, ChromeDriver & Selenium
       run: |
         sudo apt update
-        sudo apt install -y wget unzip xvfb libxi6 libgconf-2-4 libnss3 libxss1 libappindicator1 libindicator7
+        sudo apt install -y wget unzip curl gnupg
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         sudo apt install -y ./google-chrome-stable_current_amd64.deb || sudo apt --fix-broken install -y
-        CHROME_VERSION=$(google-chrome --version | grep -oP '[0-9.]+' | head -1)
-        DRIVER_VERSION=$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION%.*})
+        CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
+        DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION%.*}")
         wget https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chromedriver /usr/local/bin/chromedriver
         chmod +x /usr/local/bin/chromedriver
         pip install selenium
 
-    - name: Run Scraper
+    - name: Run scraper script
       run: |
         mkdir -p results
-        xvfb-run --auto-servernum python3 main.py
+        python3 main.py
 
-    - name: Upload Results
-      uses: actions/upload-artifact@v3
+    - name: Upload CSV results
+      uses: actions/upload-artifact@v4
       with:
         name: scraper-results
         path: results/
